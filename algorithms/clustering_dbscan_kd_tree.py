@@ -139,7 +139,9 @@ class KDTree:
                 # Check distance and if point is within radius, add to list of neighbors
                 if np.linalg.norm(node["point"][:3] - target) <= r:
                     self.radius_neighbors.append(
-                        int(node["point"][-1])  # the last element is the original point index
+                        int(
+                            node["point"][-1]
+                        )  # the last element is the original point index
                     )
 
                 # Check left and right child nodes if they could contain points within radius

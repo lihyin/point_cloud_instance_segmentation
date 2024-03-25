@@ -1,6 +1,6 @@
 # Introduction
 
-This repository implements the unsupervised KD-Tree DBSCAN clustering LiDAR point cloud instance segmentation algorithm from scratch. Except DBScan, we could use the graph cut and region growth algorithms as well. Here is the comparisons of the different algorithms. DBSCAN is a clustering-based algorithm. 
+This repository implements the unsupervised KD-Tree DBSCAN clustering LiDAR point cloud instance segmentation algorithm from scratch. Except DBScan, we could use the graph cut and region growth algorithms as well. Here is the comparison of the different algorithms. DBSCAN is a clustering-based algorithm.
 
 | Algorithm                        | Advantages                                                                 | Disadvantages                                                              |
 |----------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
@@ -32,26 +32,40 @@ python implementation.py
 ```
 
 Output:
-<img src="./doc/dbscan.png" alt="DBSCAN Output" width="400"/>
 
-# Limitations
+<img src="./doc/dbscan.png" alt="DBSCAN Output" width="500"/>
 
-Compared to sklearn's DBSCAN, the current implemented DBSCAN is slower. Ways to improve are: 1) to use depth only for DBSCAN to speed up; 2) use ball tree.
+# Limitations and Potential Improvements
+
+Compared to sklearn's DBSCAN, the current implemented DBSCAN is slower. Ways to improve are: 1) to use depth only for DBSCAN to speed up; 2) use Ball Tree.
 
 # Generate Pseudo Ground Truth by Pre-trained Cylinder3D Model
 
-For 3D instance and panopatic segmentation, there are mainly two types of applicaiton scenarios:
+For 3D instance and panoptic segmentation, there are mainly two types of application scenarios:
 
 * Indoor Scene Understanding: ScanNet is one of the popular benchmark datasets and PointNet++ is one of the SOTA models.
-* Outdoor Driving: SemanticKITTI is one of the popular benchmark datasets and Cylinder3D is one of the SOTA outdoor point cloud panopatic segmentation model.
+* Outdoor Driving: SemanticKITTI is one of the popular benchmark datasets and Cylinder3D is one of the SOTA outdoor point cloud panoptic segmentation model.
 
 We use Cylinder3D to generate the pseudo ground truth:
 
 1. [Install MMDetection3D](https://mmdetection3d.readthedocs.io/en/latest/get_started.html)
-2. Downlowd the [pre-trained Cylinder3D model and config](https://github.com/open-mmlab/mmdetection3d/tree/main/configs/cylinder3d)
-3. [Infer 3D Segmentaion by MMDetection3D](https://mmdetection3d.readthedocs.io/en/latest/user_guides/inference.html#d-segmentation)
+2. Download the [pre-trained Cylinder3D model and config](https://github.com/open-mmlab/mmdetection3d/tree/main/configs/cylinder3d)
+3. [Infer 3D Segmentation by MMDetection3D](https://mmdetection3d.readthedocs.io/en/latest/user_guides/inference.html#d-segmentation)
 
 # TODO
 
 * Evaluate the algorithm with mIoU, Panoptic Quality (PQ), and Segmentation Quality
 (SQ) with the pseudo ground truth.
+
+# Appendix
+
+Comparison of Semantic Segmentation, Instance Segmentation, Panoptic Segmentation:
+
+<img src="./doc/different_segmentation.png" alt="DBSCAN Output" width="500"/>
+
+
+| Task                | Definition                                         | Example                                                |
+|---------------------|----------------------------------------------------|--------------------------------------------------------|
+| Semantic Segmentation | Divides an image into segments based on categories or classes (without differentiate each instance) | Separating pixels that belong to different objects/classes in an image |
+| Instance Segmentation | Identifies individual objects within an image and assigns unique labels to each object (ignoring other objects and background). | Distinguishing between different instances of the same object in an image |
+| Panoptic Segmentation | Combines semantic segmentation and instance segmentation to provide a holistic understanding of an image (segmenting all pixels and putting into different categories including backgrounds). | Provides both semantic segmentation for scene understanding and instance segmentation for object-level understanding in an image |
