@@ -1,4 +1,5 @@
 # %% imports
+import json
 import time
 import numpy as np
 from enum import IntEnum
@@ -89,12 +90,12 @@ def visualize_pointcloud_downsampled_with_segment_ids(
 
 # %%
 pointcloud = np.load("./data/pointcloud_data.npy")
+pointcloud_original = pointcloud[:]
 pointcloud = pointcloud[::10]
 
 # visualize_pointcloud_downsampled(
 #     pointcloud, downsample_factor=5
 # )  # use 'downsample_factor=1' for no downsampling during visualization
-
 
 ##### TODO: REQUIRES IMPLEMENTATION ##############################
 ##################################################################
@@ -121,6 +122,16 @@ def segment_pointcloud(
     return labels
 
 
+cylinder3d_segment_ids = json.load(
+    open(
+        "./data/pointcloud_data_4d_downsample1_pseudo_ground_truth_by_cylinder3d.json",
+        "r",
+    )
+)["pts_semantic_mask"]
+visualize_pointcloud_downsampled_with_segment_ids(
+    pointcloud_original, cylinder3d_segment_ids, downsample_factor=1
+)  # use 'downsample_factor=1' for no downsampling during visualization
+
 start_time = time.time()
 segment_ids = segment_pointcloud(pointcloud, algorithm="clustering_dbscan_kd_tree")
 end_time = time.time()
@@ -139,14 +150,15 @@ end_time = time.time()
 print(f"sklearn_hddbscan total time: {end_time - start_time:.3f} seconds")
 
 labels = segment_ids
-labels_true = sklearn_hdbscan_segment_ids  # use sklearn hddbscan output as ground truth
-print(f"Homogeneity: {metrics.homogeneity_score(labels_true, labels):.3f}")
-print(f"Completeness: {metrics.completeness_score(labels_true, labels):.3f}")
-print(f"V-measure: {metrics.v_measure_score(labels_true, labels):.3f}")
-print(f"Adjusted Rand Index: {metrics.adjusted_rand_score(labels_true, labels):.3f}")
+pseudo_ground_truth_labels = sklearn_hdbscan_segment_ids  # use sklearn hddbscan output as ground truth
+
+print(f"Homogeneity: {metrics.homogeneity_score(pseudo_ground_truth_labels, labels):.3f}")
+print(f"Completeness: {metrics.completeness_score(pseudo_ground_truth_labels, labels):.3f}")
+print(f"V-measure: {metrics.v_measure_score(pseudo_ground_truth_labels, labels):.3f}")
+print(f"Adjusted Rand Index: {metrics.adjusted_rand_score(pseudo_ground_truth_labels, labels):.3f}")
 print(
     "Adjusted Mutual Information:"
-    f" {metrics.adjusted_mutual_info_score(labels_true, labels):.3f}"
+    f" {metrics.adjusted_mutual_info_score(pseudo_ground_truth_labels, labels):.3f}"
 )
 print(f"Silhouette Coefficient: {metrics.silhouette_score(pointcloud, labels):.3f}")
 
