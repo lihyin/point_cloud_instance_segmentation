@@ -3,9 +3,11 @@ import time
 import numpy as np
 from enum import IntEnum
 import matplotlib.pyplot as plt
+from sklearn import metrics
 from sklearn.datasets import make_blobs
 from algorithms.clustering_dbscan_kd_tree import DBSCANKDTree
 from algorithms.sklearn_dbscan import sklearn_dbscan
+from algorithms.sklearn_hddbscan import sklearn_hdbscan
 
 
 # %% types
@@ -104,12 +106,15 @@ def segment_pointcloud(
 ) -> np.ndarray:
     if algorithm == "sklearn_dbscan":
         labels = sklearn_dbscan(pointcloud)
+    elif algorithm == "sklearn_hdbscan":
+        labels = sklearn_hdbscan(pointcloud)
     elif algorithm == "clustering_dbscan_kd_tree":
         dbscan_kd_tree = DBSCANKDTree()
         labels = dbscan_kd_tree.fit(pointcloud)
     else:
         print(
-            f"Please select algorithm from 'sklearn_dbscan', 'clustering_dbscan_kd_tree'!"
+            f"Please select algorithm from 'sklearn_dbscan', \
+            'clustering_dbscan_kd_tree', 'sklearn_hdbscan'!"
         )
         exit()
 
@@ -119,12 +124,31 @@ def segment_pointcloud(
 start_time = time.time()
 segment_ids = segment_pointcloud(pointcloud, algorithm="clustering_dbscan_kd_tree")
 end_time = time.time()
-print(f"clustering_dbscan_kd_tree total time: {end_time - start_time} seconds")
+print(f"clustering_dbscan_kd_tree total time: {end_time - start_time:.3f} seconds")
 
 start_time = time.time()
 sklearn_dbscan_segment_ids = segment_pointcloud(pointcloud, algorithm="sklearn_dbscan")
 end_time = time.time()
-print(f"sklearn_dbscan total time: {end_time - start_time} seconds")
+print(f"sklearn_dbscan total time: {end_time - start_time:.3f} seconds")
+
+start_time = time.time()
+sklearn_hdbscan_segment_ids = segment_pointcloud(
+    pointcloud, algorithm="sklearn_hdbscan"
+)
+end_time = time.time()
+print(f"sklearn_hddbscan total time: {end_time - start_time:.3f} seconds")
+
+labels = segment_ids
+labels_true = sklearn_hdbscan_segment_ids  # use sklearn hddbscan output as ground truth
+print(f"Homogeneity: {metrics.homogeneity_score(labels_true, labels):.3f}")
+print(f"Completeness: {metrics.completeness_score(labels_true, labels):.3f}")
+print(f"V-measure: {metrics.v_measure_score(labels_true, labels):.3f}")
+print(f"Adjusted Rand Index: {metrics.adjusted_rand_score(labels_true, labels):.3f}")
+print(
+    "Adjusted Mutual Information:"
+    f" {metrics.adjusted_mutual_info_score(labels_true, labels):.3f}"
+)
+print(f"Silhouette Coefficient: {metrics.silhouette_score(pointcloud, labels):.3f}")
 
 visualize_pointcloud_downsampled_with_segment_ids(
     pointcloud, segment_ids, downsample_factor=1
@@ -132,4 +156,8 @@ visualize_pointcloud_downsampled_with_segment_ids(
 
 visualize_pointcloud_downsampled_with_segment_ids(
     pointcloud, sklearn_dbscan_segment_ids, downsample_factor=1
+)  # use 'downsample_factor=1' for no downsampling during visualization
+
+visualize_pointcloud_downsampled_with_segment_ids(
+    pointcloud, sklearn_hdbscan_segment_ids, downsample_factor=1
 )  # use 'downsample_factor=1' for no downsampling during visualization
