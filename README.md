@@ -1,6 +1,11 @@
 # Introduction
 
-This repository implements the unsupervised [KD-Tree](https://en.wikipedia.org/wiki/K-d_tree) [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN) clustering LiDAR point cloud instance segmentation algorithm from scratch. Except for DBSCAN, we could use the following algorithms as well. Here is a comparison of the algorithms. DBSCAN is a clustering-based algorithm. According to [Comparing Different Sklearn Clustering Algorithms On Toy Datasets](https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html), DBSCAN is one of the best algorithms, does not require to specify the cluster number, and can handle noise outliers, which are the reasons we selected it.
+This repository implements the unsupervised [KD-Tree](https://en.wikipedia.org/wiki/K-d_tree) [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN) clustering LiDAR point cloud instance segmentation algorithm from scratch. Except for DBSCAN, we could use the following algorithms as well. DBSCAN is a clustering-based algorithm. According to [Comparing Different Sklearn Clustering Algorithms On Toy Datasets](https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html), DBSCAN is one of the best algorithms. Other reasons we selected DBSCAN are:
+
+* Cluster discovery: DBSCAN can find clusters of any shape and size, including non-linear shapes.
+* Noise identification: DBSCAN can identify noise data while clustering.
+* Cluster density separation: DBSCAN is good at separating high-density clusters from low-density clusters.
+* Cluster number specification: DBSCAN doesn't require the number of clusters to be specified in advance.
 
 | Algorithm                        | Advantages                                                                 | Disadvantages                                                              |
 |----------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
